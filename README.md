@@ -8,3 +8,5 @@ The solutions for each year/date/language is my code.
 I am slowly working on solving all years/days in C++, Python, Java, and Rust
 
 You should visit https://adventofcode.com and partake yourself!
+
+MD5 Library by Frank Thilo (thilo@unix-ag.org)
