@@ -20,7 +20,7 @@
 int main(int argc, char** argv)
 {
 	
-	std::vector<std::string> input = getInput("input.txt");
+	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	
 	std::vector<std::string> number_strings;
 	std::string new_number_string;

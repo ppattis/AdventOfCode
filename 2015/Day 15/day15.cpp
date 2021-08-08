@@ -130,7 +130,6 @@ int main(int argc, char** argv)
 	std::cout << "    Part 1 : " << answer_1 << std::endl;
 	
 	int answer_2 = 0;
-	std::cout << results2.size() << std::endl;
 	for (int a = 0; a < results2.size(); a++)
 	{
 		if (results2[a] > answer_2)

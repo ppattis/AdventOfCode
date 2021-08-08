@@ -117,13 +117,13 @@ class Reindeer
 int main(int argc, char** argv)
 {
 	
-	std::vector<std::string> input = getInput("input.txt");
+	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std::vector<Reindeer> lineup;
 	
 	int race_time = 2503;
 	for (int a = 1; a < input.size(); a++)
 	{
-		std::vector<std::string> line = parseLine(input[a], " ");
+		std::vector<std::string> line = ptd::utils::parseLine(input[a], " ");
 		Reindeer new_deer;
 		std::cout << input[a] << std::endl;
 		std::cout << line[0] << " " << line[3] << " " << line[6] << " " << line[13] << std::endl;

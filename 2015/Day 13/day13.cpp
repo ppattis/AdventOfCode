@@ -56,7 +56,7 @@ int getBest(std::vector<std::string> guests, std::map<std::pair<std::string, std
 int main(int argc, char** argv)
 {
 	
-	std::vector<std::string> input = getInput("input.txt");
+	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std::vector<std::string> guests;
 	std::map<std::pair<std::string, std::string>, int> happiness_guide;
 	std::vector<int> deltas;
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 	
 	for (int a = 1; a < input.size(); a++)
 	{
-		std::vector<std::string> line = parseLine(input[a], " ");
+		std::vector<std::string> line = ptd::utils::parseLine(input[a], " ");
 		bool negative_gain = false;
 		if (line[2] == "lose")
 		{
