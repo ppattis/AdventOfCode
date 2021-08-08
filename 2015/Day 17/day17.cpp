@@ -23,12 +23,11 @@
 int main(int argc, char** argv)
 {
 	
-	std::vector<std::string> input = getInput("input.txt");
+	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std::vector<int> containers;
 	
 	for (int a = 1; a < input.size(); a++)
 	{
-		std::cout << input[a] << std::endl;
 		containers.push_back(std::stoi(input[a]));
 	}
 	int number = 0;
@@ -36,11 +35,6 @@ int main(int argc, char** argv)
 	int index = 0;
 	do
 	{
-		for (int x = 0; x < containers.size(); x++)
-		{
-			std::cout << containers[x] << " ";
-		}
-		std::cout << "\n";
 		index++;
 		int volume = 150;
 		int a = 0;
@@ -53,7 +47,6 @@ int main(int argc, char** argv)
 		{
 			number++;
 		}
-		std::cout << index << std::endl;
 	}
 	while (std::next_permutation(containers.begin(), containers.end()));
 		

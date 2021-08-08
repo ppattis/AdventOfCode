@@ -1,5 +1,5 @@
 //
-//  Advent of Code 2016
+//  Advent of Code 2015
 //  Day 
 //
 //  By PatchesTheDipstick
@@ -20,9 +20,9 @@
 
 int main(int argc, char** argv)
 {
-	std::vector<std::string> input = getInput("input/day.txt");
+	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	
-	std::cout << "Day  answers:" << std::endl;
+	std::cout << "Advent of Code 2015 Day  answers:" << std::endl;
 	std::cout << "    Part 1 : " << 0 << std::endl;
 	std::cout << "    Part 2 : " << 0 << std::endl;
 

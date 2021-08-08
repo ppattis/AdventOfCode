@@ -41,12 +41,12 @@ struct AuntSue
 int main(int argc, char** argv)
 {
 	
-	std::vector<std::string> raw_input = getInput("input.txt");
+	std::vector<std::string> raw_input = ptd::utils::getInput("input.txt");
 	std::vector<AuntSue> input;
 	
 	for (int a = 1; a < raw_input.size(); a++)
 	{
-		std::vector<std::string> line = parseLine(raw_input[a], " ");
+		std::vector<std::string> line = ptd::utils::parseLine(raw_input[a], " ");
 		AuntSue new_aunt;
 		//std::cout << line.size()<< std::endl;
 		//std::cout << line[0] << std::endl;

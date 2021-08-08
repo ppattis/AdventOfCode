@@ -8,12 +8,12 @@
 def getInput(file_name):
 	input = []
 	with open(file_name) as input_file:
-		input = input_file.readlines()
+		input = input_file.read().splitlines()
 	return input
 
 if __name__ == '__main__':
 	
-	input = getInput("input/day01.txt")
+	input = getInput("input.txt")
 	
 	
 	part_one = 0
