@@ -31,4 +31,7 @@
 *.out
 *.app
 
+# Compiled classes
+*.class
+
 /PtD Progress.xlsx
