@@ -8,11 +8,12 @@
 
 //  System includes...
 
+#include <iostream>
+#include <limits>
+#include <map>
+#include <regex>
 #include <string>
 #include <vector>
-#include <map>
-#include <utility>
-#include <algorithm>
 
 //  Third Party includes...
 
@@ -22,99 +23,113 @@
 
 #include "../utils.hpp"
 
-int getBest(std::vector<std::string> guests, std::map<std::pair<std::string, std::string>, int> happiness_guide)
+int recBest(std::string name, std::string first, std::vector<std::string> guests, std::map<std::string, std::map<std::string, int>> happiness)
 {
-	int return_value = 0;
-	std::vector<int> values;
-	
-	std::sort(guests.begin(), guests.end());
-	
-	do
+	if (guests.size() == 1)
 	{
-		int temp = 0;
-		temp += happiness_guide[{guests[0], guests[guests.size() - 1]}];
-		temp += happiness_guide[{guests[guests.size() - 1], guests[0]}];
-		for (int a = 0; a < guests.size() - 1; a++)
-		{
-			temp += happiness_guide[{guests[a], guests[a + 1]}];
-			temp += happiness_guide[{guests[a + 1], guests[a]}];
-		}
-		values.push_back(temp);
-	} while (std::next_permutation(guests.begin(), guests.end()));
-	return_value = values[0];
-	for (int a = 1; a < values.size(); a++)
-	{
-		if (return_value < values[a])
-		{
-			return_value = values[a];
-		}
+		return -happiness[name][guests[0]] + (-happiness[guests[0]][first]);
 	}
-	return return_value;
+	else
+	{
+		int happy = std::numeric_limits<int>::max();
+		int happy_index = -1;
+		for (int a = 0; a < guests.size(); a++)
+		{
+			if (happiness[name][guests[a]] < happy)
+			{
+				happy = happiness[name][guests[a]];
+				happy_index = a;
+			}
+		}
+		std::string new_name = guests[happy_index];
+		guests.erase(guests.begin() + happy_index);
+		return (-happy) + recBest(new_name, first, guests, happiness);
+	}
+	return -1;
 }
 
+int getBest(std::vector<std::string> guests, std::map<std::string, std::map<std::string, int>> happiness)
+{
+	std::vector<int> dists;
+	dists.resize(guests.size(), std::numeric_limits<int>::max());
+	std::vector<int> predecessor;
+	predecessor.resize(guests.size(), -1);
+	dists[0] = 0;
+	for (int a = 0; a < guests.size() - 1; a++)
+	{
+		for (int b = a + 1; b < guests.size(); b++)
+		{
+			if (dists[a] + happiness[guests[a]][guests[b]] < dists[b])
+			{
+				dists[b] = dists[a] + happiness[guests[a]][guests[b]];
+				predecessor[b] = a;
+			}
+		}
+	}
+	int total = 0;
+	for (int a = 0; a < dists.size(); a++)
+	{
+		total += dists[a];
+	}
+	return -total;
+}
 
+void addOnce(std::vector<std::string> &guests, std::string name)
+{
+	for (int a = 0; a < guests.size(); a++)
+	{
+		if (guests[a] == name)
+		{
+			return;
+		}
+	}
+	guests.push_back(name);
+}
+	
 int main(int argc, char** argv)
 {
 	
 	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std::vector<std::string> guests;
-	std::map<std::pair<std::string, std::string>, int> happiness_guide;
-	std::vector<int> deltas;
+	std::map<std::string, std::map<std::string, int>> happiness;
 	
-	int answer_one = 0;
-	int answer_two = 0;
-	
-	for (int a = 1; a < input.size(); a++)
+	std::regex filter("([a-zA-Z]+) would (lose|gain) ([0-9]+) happiness units by sitting next to ([a-zA-Z]+).");
+	for (std::string line : input)
 	{
-		std::vector<std::string> line = ptd::utils::parseLine(input[a], " ");
-		bool negative_gain = false;
-		if (line[2] == "lose")
+		std::smatch token;
+		std::regex_match(line, token, filter);
+		int happy = ptd::utils::stringToInt(token.str(3));
+		//  Using shortest path, so taking the inverse of the happiness...
+		if (token.str(2) == "gain")
 		{
-			negative_gain = true;
+			happy = -happy;
 		}
-		if (line[10][line[10].size() - 1] == '.')
-		{
-			line[10].erase(line[10].size() - 1);
-		}
-		happiness_guide[{line[0], line[10]}] = std::stoi(line[3]);
-		if (negative_gain)
-		{
-			happiness_guide[{line[0], line[10]}] = happiness_guide[{line[0], line[10]}] * -1;
-		}
-		bool one = false;
-		bool two = false;
-		for (int a = 0; a < guests.size(); a++)
-		{
-			if (guests[a] == line[0])
-			{
-				one = true;
-			}
-			if (guests[a] == line[10])
-			{
-				two = true;
-			}
-		}
-		if (!one)
-		{
-			guests.push_back(line[0]);
-		}
-		if (!two)
-		{
-			guests.push_back(line[10]);
-		}
+		happiness[token.str(1)][token.str(4)] += happy;
+		happiness[token.str(4)][token.str(1)] += happy;
+		addOnce(guests, token.str(1));
+		addOnce(guests, token.str(4));
 	}
 	std::cout << "Input parsed..." << std::endl;
-	answer_one = getBest(guests, happiness_guide);
-	for (int a = 0; a < guests.size(); a++)
-	{
-		happiness_guide[{guests[a], "Patches"}] = 0;
-		happiness_guide[{"Patches", guests[a]}] = 0;
-	}
-	guests.push_back("Patches");
-	answer_two = getBest(guests, happiness_guide);
+	std::vector<std::string> guests_one = guests;
+	std::string name = guests_one[0];
+	guests_one.erase(guests_one.begin());
+	
+	int answer_one = recBest(name, name, guests_one, happiness);
 	
 	std::cout << "Advent of Code 2015 Day 1 answers:" << std::endl;
 	std::cout << "    Part 1 : " << answer_one << std::endl;
+	
+	std::vector<std::string> guests_two;
+	for (std::string name : guests)
+	{
+		guests_two.push_back(name);
+		happiness["Patches"][name] = 0;
+		happiness[name]["Patches"] = 0;
+	}
+	name = guests_two[0];
+	guests_two.erase(guests_two.begin());
+	int answer_two = recBest(name, name, guests_two, happiness);
+	
 	std::cout << "    Part 2 : " << answer_two << std::endl;
 
 	return (0);

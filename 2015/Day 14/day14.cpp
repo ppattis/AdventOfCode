@@ -9,6 +9,7 @@
 //  System includes...
 
 #include <iostream>
+#include <regex>
 
 //  Third Party includes...
 
@@ -69,7 +70,6 @@ class Reindeer
 	void awardPoint()
 	{
 		points++;
-		std::cout << name << std::endl;
 	}
 	
 	std::string getName()
@@ -86,7 +86,7 @@ class Reindeer
 	{
 		if (currently_resting)
 		{
-			if (time_in_state == rest_required)
+			if (time_in_state >= rest_required)
 			{
 				currently_resting = false;
 				time_in_state = 1;
@@ -99,7 +99,7 @@ class Reindeer
 		}
 		else
 		{
-			if (time_in_state == can_fly)
+			if (time_in_state >= can_fly)
 			{
 				currently_resting = true;
 				time_in_state = 1;
@@ -111,32 +111,39 @@ class Reindeer
 			}
 		}
 	}
+	
+	void printDeer()
+	{
+		std::string state = (currently_resting ? "resting" : "resting");
+		std::cout << name << " flies " << speed << " km/s for " << can_fly;
+		std::cout << " seconds, and then must rest for " << rest_required;
+		std::cout << " seconds.  Is currently " << state << " and has flown ";
+		std::cout << distance_traveled << "\n";
+	}
 };
 
 
 int main(int argc, char** argv)
 {
 	
+	std::regex filter ("^(.*) can fly (.*) km.* for (.*) sec.* for (.*) sec.*?");
 	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std::vector<Reindeer> lineup;
 	
 	int race_time = 2503;
-	for (int a = 1; a < input.size(); a++)
+	for (int a = 0; a < input.size(); a++)
 	{
-		std::vector<std::string> line = ptd::utils::parseLine(input[a], " ");
+		std::smatch token;
+		std::regex_search(input[a], token, filter);
 		Reindeer new_deer;
-		std::cout << input[a] << std::endl;
-		std::cout << line[0] << " " << line[3] << " " << line[6] << " " << line[13] << std::endl;
-		new_deer.setName(line[0]);
-		new_deer.setSpeed(stoi(line[3]));
-		new_deer.setRun(stoi(line[6]));
-		new_deer.setRest(stoi(line[13]));
+		new_deer.setName(token.str(1));
+		new_deer.setSpeed(stoi(token.str(2)));
+		new_deer.setRun(stoi(token.str(3)));
+		new_deer.setRest(stoi(token.str(4)));
 		lineup.push_back(new_deer);
 	}
-	//std::cout << "Input processed.  " << lineup.size() << " deer." << std::endl;
 	for (int a = 1; a < race_time; a++)
 	{
-		std::cout << "Race time : " << a + 1 << std::endl;
 		for (int b = 0; b < lineup.size(); b++)
 		{
 			lineup[b].update();
@@ -154,20 +161,16 @@ int main(int argc, char** argv)
 		{
 			if (lineup[a].getDistance() == furthest_distance)
 			{
-				std::cout << lineup[a].getName() << " gets a point." << std::endl;
 				lineup[a].awardPoint();
 			}
 		}
-			//std::cout << "Update deer " << b << " for second " << a << std::endl;
-		
 	}
-
+	
 	int answer_1 = lineup[0].getDistance();
 	int answer_2 = lineup[0].getPoints();
 	std::cout << " Race complete..." << std::endl;
 	for (int a = 0; a < lineup.size(); a++)
 	{
-		std::cout << lineup[a].getName() << " " << lineup[a].getDistance() << " " << lineup[a].getPoints() << std::endl;
 		if (lineup[a].getDistance() > answer_1)
 		{
 			answer_1 = lineup[a].getDistance();
@@ -178,7 +181,7 @@ int main(int argc, char** argv)
 		}
 	}
 	
-	std::cout << "Advent of Code 2015 Day 1 answers:" << std::endl;
+	std::cout << "Advent of Code 2015 Day 14 answers:" << std::endl;
 	std::cout << "    Part 1 : " << answer_1 << std::endl;
 	std::cout << "    Part 2 : " << answer_2 << std::endl;
 
