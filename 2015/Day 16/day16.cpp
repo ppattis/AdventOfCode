@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 //  Third Party includes...
 
@@ -44,28 +45,25 @@ int main(int argc, char** argv)
 	std::vector<std::string> raw_input = ptd::utils::getInput("input.txt");
 	std::vector<AuntSue> input;
 	
-	for (int a = 1; a < raw_input.size(); a++)
+	for (std::string part : raw_input)
 	{
-		std::vector<std::string> line = ptd::utils::parseLine(raw_input[a], " ");
-		AuntSue new_aunt;
-		//std::cout << line.size()<< std::endl;
-		//std::cout << line[0] << std::endl;
-		for (int b = 0; b < line.size(); b++)
+		std::vector<std::string> line;
+		std::stringstream ss (part);
+		std::string token;
+		while (ss >> token)
 		{
-			if (line[b].find(':') != std::string::npos)
+			if (token.find(':') != std::string::npos)
 			{
-				std::string temp = line[b].substr(0, line[b].find(':'));
-				line[b].clear();
-				line[b] = temp;
+				token.erase(token.find(':') ,1);
 			}
-			else if (line[b].find(',') != std::string::npos)
+			else if (token.find(',') != std::string::npos)
 			{
-				std::string temp = line[b].substr(0, line[b].find(','));
-				line[b].clear();
-				line[b] = temp;
+				token.erase(token.find(','), 1);
 			}
+			line.push_back(token);
 		}
-		//std::cout << line[1] << std::endl;
+		AuntSue new_aunt;
+		
 		new_aunt.index = std::stoi(line[1]);
 		for (int b = 2; b < line.size(); b += 2)
 		{
