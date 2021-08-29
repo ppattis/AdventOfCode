@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std::vector<int> containers;
 	
-	for (int a = 1; a < input.size(); a++)
+	for (int a = 0; a < input.size(); a++)
 	{
 		containers.push_back(std::stoi(input[a]));
 	}

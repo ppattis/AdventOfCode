@@ -8,9 +8,11 @@
 
 //  System includes...
 
-#include <vector>
+#include <iostream>
 #include <map>
+#include <sstream>
 #include <utility>
+#include <vector>
 
 //  Third Party includes...
 
@@ -20,21 +22,81 @@
 
 #include "../utils.hpp"
 
+typedef std::pair<int, int> coord;
+
 struct Direction
 {
 	char turn;
 	int walk;
 };
 
+void turn(char dir, coord &move)
+{
+	//  Traveling north...
+	if (move == std::make_pair(0, -1))
+	{
+		if (dir == 'R')
+			move = std::make_pair(1, 0);
+		else
+			move = std::make_pair(-1, 0);
+	}
+	//  Traveling east...
+	else if (move == std::make_pair(1, 0))
+	{
+		if (dir == 'R')
+			move = std::make_pair(0, 1);
+		else
+			move = std::make_pair(0, -1);
+	}
+	//  Traveling south...
+	else if (move == std::make_pair(0, 1))
+	{
+		if (dir == 'R')
+			move = std::make_pair(-1, 0);
+		else
+			move = std::make_pair(1, 0);
+	}
+	//  Traveling west...
+	else if (move == std::make_pair(-1, 0))
+	{
+		if (dir == 'R')
+			move = std::make_pair(0, -1);
+		else
+			move = std::make_pair(0, 1);
+	}
+}
+
+std::vector<std::string> parse(std::string input)
+{
+	std::stringstream ss (input);
+	std::string token;
+	std::vector<std::string> ret;
+	while (ss >> token)
+	{
+		if (token.find(',') != std::string::npos)
+		{
+			token.erase(token.begin() + token.size() - 1);
+		}
+		ret.push_back(token);
+	}
+	return ret;
+}
+
+void walk(coord pos, coord dir)
+{
+	pos.first += dir.first;
+	pos.second += dir.second;
+}
 
 int main(int argc, char** argv)
 {
 	std::vector<std::string> input = ptd::utils::getInput("input.txt");
 	std:: vector<Direction> directions;
-	std::map<std::pair<int, int>, int> intersections;
-	for (int a = 1; a < input.size(); a++)
+	std::map<coord, int> intersections;
+	
+	for (int a = 0; a < input.size(); a++)
 	{
-		std::vector<std::string> line = ptd::utils::parseLine(input[a], ", ");
+		std::vector<std::string> line = parse(input[a]);
 		for (int b = 0; b < line.size(); b++)
 		{
 			Direction new_direction;
@@ -44,94 +106,30 @@ int main(int argc, char** argv)
 			directions.push_back(new_direction);
 		}
 	}
-	
-	int my_x = 0;
-	int my_y = 0;
-	int my_dx = 0;
-	int my_dy = 1;
+	coord location = std::make_pair(0, 0);
+	coord change = std::make_pair(-1, 0);
 	intersections[{0, 0}]++;
 	bool part2_done = false;
-	int part_2_x = 0;
-	int part_2_y = 0;
+	coord part_two;
+	
 	for (int a = 0; a < directions.size(); a++)
 	{
-		if (directions[a].turn == 'L')
+		turn(directions[a].turn, change);
+		for (int steps = 0; steps < directions[a].walk; steps++)
 		{
-			if ((my_dx == 0) && (my_dy == 1))
+			location.first += change.first;
+			location.second += change.second;
+			intersections[location]++;
+			if ((!part2_done) && (intersections[location] > 1))
 			{
-				my_dx = -1;
-				my_dy = 0;
-			}
-			else if ((my_dx == -1) && (my_dy == 0))
-			{
-				my_dx = 0;
-				my_dy = -1;
-			}
-			else if ((my_dx == 0) && (my_dy == -1))
-			{
-				my_dx = 1;
-				my_dy = 0;
-			}
-			else
-			{
-				my_dx = 0;
-				my_dy = 1;
-			}
-		}
-		else
-		{
-			if ((my_dx == 0) && (my_dy == 1))
-			{
-				my_dx = 1;
-				my_dy = 0;
-			}
-			else if ((my_dx == 1) && (my_dy == 0))
-			{
-				my_dx = 0;
-				my_dy = -1;
-			}
-			else if ((my_dx == 0) && (my_dy == -1))
-			{
-				my_dx = -1;
-				my_dy = 0;
-			}
-			else
-			{
-				my_dx = 0;
-				my_dy = 1;
-			}
-		}
-		my_x += my_dx * directions[a].walk;
-		my_y += my_dy * directions[a].walk;
-		intersections[{my_x, my_y}]++;
-		if ((intersections[{my_x, my_y}] > 1) && (!part2_done))
-			{
-				part_2_x = my_x;
-				part_2_y = my_y;
+				part_two = location;
 				part2_done = true;
 			}
-	}
-	int x_away = my_x;
-	int y_away = my_y;
-	if (x_away < 0)
-	{
-		x_away = x_away * -1;
-	}
-	if (y_away < 0)
-	{
-		y_away = y_away * -1;
-	}
-	if (part_2_x < 0)
-	{
-		part_2_x = part_2_x * -1;
-	}
-	if (part_2_y < 0)
-	{
-		part_2_y = part_2_y * -1;
+		}
 	}
 	
-	int answer_1 = x_away + y_away;
-	int answer_2 = part_2_x + part_2_y;;
+	int answer_1 = std::abs(location.first) + std::abs(location.second);
+	int answer_2 = std::abs(part_two.first) + std::abs(part_two.second);
 	
 	std::cout << "Advent of Code 2016 Day 1 answers:" << std::endl;
 	std::cout << "    Part 1 : " << answer_1 << std::endl;
