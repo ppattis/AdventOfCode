@@ -138,7 +138,7 @@ int main(int argc, char** argv)
 	std::vector<int> part_two_code;
 	int current_button = 5;
 	int part_two_button = 5;
-	for (int a = 1; a < input.size(); a++)
+	for (int a = 0; a < input.size(); a++)
 	{
 		for (int b = 0; b < input[a].size(); b++)
 		{
