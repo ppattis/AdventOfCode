@@ -34,4 +34,4 @@
 # Compiled classes
 *.class
 
-/PtD Progress.xlsx
+*.xlsx
