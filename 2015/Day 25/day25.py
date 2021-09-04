@@ -30,7 +30,7 @@ if __name__ == '__main__':
 	grid = []
 	value = 20151125
 	for a in range(2, index + 1):
-		grid.append(value)
+		print(a)
 		value *= 252533
 		value %= 33554393
 	
@@ -40,5 +40,5 @@ if __name__ == '__main__':
 	part_two = 0
 	print("Advent of Code 2015 Day 03")
 	print("  Part one:", part_one)
-	print("  Part two:", part_two)	
+	print("  Part two: Free Star")
 	
